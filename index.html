@@ -4,23 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="script.js"></script>
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="node_modules/normalize.css/normalize.css">
 </head>
 <body>
     <div class="container">
-        <header class="header">Tic-Tac-Toe</header>
+        <header class="header"><h1 class="title">Tic-Tac-Toe</h1></header>
         <main class="game-area">
             <div class="board">
-                <button class="cell" data-id="1"></button>
-                <button class="cell" data-id="2"></button>
-                <button class="cell" data-id="3"></button>
+                <button class="cell no-top no-left" data-id="0"></button>
+                <button class="cell no-top" data-id="1"></button>
+                <button class="cell no-top no-right" data-id="2"></button>
+                <button class="cell no-left" data-id="3"></button>
                 <button class="cell" data-id="4"></button>
-                <button class="cell" data-id="5"></button>
-                <button class="cell" data-id="6"></button>
-                <button class="cell" data-id="7"></button>
-                <button class="cell" data-id="8"></button>
-                <button class="cell" data-id="9"></button>
+                <button class="cell no-right" data-id="5"></button>
+                <button class="cell no-left no-bottom" data-id="6"></button>
+                <button class="cell no-bottom" data-id="7"></button>
+                <button class="cell no-bottom no-right" data-id="8"></button>
             </div>
+            <p class="winner"></p>
         </main>
     </div>
 </body>

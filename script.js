@@ -30,6 +30,10 @@ function gameBoard() {
         }
     }
 
+    function checkCell(row, col) {
+        return board[row][col].getMarker() === '';
+    }
+
     function setCell(row, col, marker) {
         const currentMarker = board[row][col].getMarker();
         if(currentMarker !== '') return false;
@@ -116,7 +120,7 @@ function gameBoard() {
         }
     }
 
-    return {getBoard, printBoard, resetBoard, setCell, checkWin};
+    return {getBoard, printBoard, resetBoard, checkCell, setCell, checkWin};
 }
 
 function player(name, marker) {
@@ -127,45 +131,77 @@ function player(name, marker) {
 
 function gameController(player1, player2, board) {
     let turns = 0;
-    let activePlayer = player1;
-    let activeMarker = activePlayer.getMarker();
+    let activePlayer;
+    let activeMarker;
+
+    const getActiveMarker = () => activeMarker;
 
     function setActivePlayer() {
-        activePlayer = activePlayer === player1 ? player2 : player1;
+        activePlayer = (activePlayer === player1) ? player2 : player1;
         activeMarker = activePlayer.getMarker();
     }
 
     function takeTurn(row, col) {
-        let validSquare = board.setCell(row, col, activeMarker);
+        let validSquare = board.checkCell(row, col);  
         if(validSquare) {
             turns++;
+            setActivePlayer();
+            board.setCell(row, col, activeMarker);
             const gameStatus = board.checkWin(activeMarker);
+            board.printBoard();
+
+            let turnInfo = {validSquare};
+
             if(gameStatus){
-                win(activePlayer)
+                turnInfo.gameStatus = activePlayer;
             } 
             else if(turns === 9) {
-                win('draw');
+                turnInfo.gameStatus = 'draw';
             } else {
-                setActivePlayer();
+                
+                turnInfo.gameStatus = 'continue'
+            }
+            
+            return turnInfo;
+        }
+        return {validSquare};
+    }
+
+    return {takeTurn, getActiveMarker};
+}
+
+function displayController(game) {
+    const cells = Array.from(document.querySelectorAll(".cell"))
+    cells.forEach(cell => cell.addEventListener('click', cellClick));
+
+    function cellClick(e) {
+        const cellId = e.target.dataset.id
+        const row = getRow(cellId);
+        const col = getCol(cellId);
+        const turnInfo = game.takeTurn(row, col);
+
+        if(!turnInfo.validSquare) return;
+
+        e.target.textContent = game.getActiveMarker();
+            
+        if(turnInfo.gameStatus != 'continue') {
+            const winText = document.querySelector('.winner');
+            winText.classList.add('revealed');
+            if(turnInfo.gameStatus === 'draw') {
+                winText.textContent = "It's a draw!";
+            } else {
+                winText.textContent = `${turnInfo.gameStatus.getName()} wins!`;
             }
         }
-        
     }
 
-    function win (player) {
-        if(player === 'draw') {
-            console.log('its a draw!');
-        }
-        else {
-            console.log(`${player.getName()} wins!`);
-        }
-    }
+    const getRow = (cellId) => Math.floor(cellId/3);
 
-    return {takeTurn};
+    const getCol = (cellId) => cellId % 3;
 }
 
 const board = gameBoard();
 const player1 = player('John', 'x');
 const player2 = player('Jack', 'o');
 const game = gameController(player1, player2, board);
-board.printBoard();
+displayController(game);
