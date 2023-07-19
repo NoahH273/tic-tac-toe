@@ -106,27 +106,12 @@ function gameBoard() {
         return true;
     }
 
-    function printBoard() {
-        for(let row = 0; row < 3; row++) {
-            let line = ''
-            for(let col = 0; col < 3; col++) {
-                line += board[row][col].getMarker() || ' ';
-                if(col != 2) line += '|';
-            }
-            console.log(line);
-            if(row != 2) {
-                console.log('-------')
-            }
-        }
-    }
-
-    return {getBoard, printBoard, resetBoard, checkCell, setCell, checkWin};
+    return {getBoard, resetBoard, checkCell, setCell, checkWin};
 }
 
-function player(name, marker) {
+function player(marker) {
     let getMarker = () => marker;
-    let getName = () => name;
-    return {getMarker, getName};
+    return {getMarker};
 }
 
 function gameController(player1, player2, board) {
@@ -148,7 +133,6 @@ function gameController(player1, player2, board) {
             setActivePlayer();
             board.setCell(row, col, activeMarker);
             const gameStatus = board.checkWin(activeMarker);
-            board.printBoard();
 
             let turnInfo = {validSquare};
 
@@ -190,7 +174,7 @@ function displayController(game) {
             if(turnInfo.gameStatus === 'draw') {
                 winText.textContent = "It's a draw!";
             } else {
-                winText.textContent = `${turnInfo.gameStatus.getName()} wins!`;
+                winText.textContent = `${turnInfo.gameStatus.getMarker()} wins!`;
             }
         }
     }
@@ -201,7 +185,7 @@ function displayController(game) {
 }
 
 const board = gameBoard();
-const player1 = player('John', 'x');
-const player2 = player('Jack', 'o');
+const player1 = player('x');
+const player2 = player('o');
 const game = gameController(player1, player2, board);
 displayController(game);
