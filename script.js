@@ -98,15 +98,30 @@ function gameBoard() {
             top right to bottom left
             immediately evaluates to false if one square is has the wrong marker because there are no more possible winning diagonals
         */
-        for(let row = 2; row >= 0; row--) {
+        for(let row = 0; row < 3; row++) {
             if(board[row][col].getMarker() !== marker) {
                 return false;
             }
+            col--;
         }
         return true;
     }
 
-    return {getBoard, resetBoard, checkCell, setCell, checkWin};
+    function printBoard() {
+        for(let row = 0; row < 3; row++) {
+            let line = ''
+            for(let col = 0; col < 3; col++) {
+                line += board[row][col].getMarker() || ' ';
+                if(col != 2) line += '|';
+            }
+            console.log(line);
+            if(row != 2) {
+                console.log('-------')
+            }
+        }
+    }
+
+    return {getBoard, resetBoard, checkCell, setCell, checkWin, printBoard};
 }
 
 function player(marker) {
@@ -151,37 +166,63 @@ function gameController(player1, player2, board) {
         return {validSquare};
     }
 
-    return {takeTurn, getActiveMarker};
+    function reset() {
+        turns = 0;
+        activePlayer = undefined;
+        activeMarker = undefined;
+        board.resetBoard();
+    }
+
+    return {takeTurn, getActiveMarker, reset};
 }
 
 function displayController(game) {
     const cells = Array.from(document.querySelectorAll(".cell"))
-    cells.forEach(cell => cell.addEventListener('click', cellClick));
+    const resetButton = document.querySelector('.reset');
+    resetButton.addEventListener('click', reset);
+    const winText = document.querySelector('.winner');
+    reset();
 
     function cellClick(e) {
-        const cellId = e.target.dataset.id
+        const cell = e.target;
+        const cellId = cell.dataset.id
         const row = getRow(cellId);
         const col = getCol(cellId);
         const turnInfo = game.takeTurn(row, col);
 
         if(!turnInfo.validSquare) return;
 
-        e.target.textContent = game.getActiveMarker();
+        cell.textContent = game.getActiveMarker();
+        cell.classList.add('filled');
             
         if(turnInfo.gameStatus != 'continue') {
-            const winText = document.querySelector('.winner');
             winText.classList.add('revealed');
             if(turnInfo.gameStatus === 'draw') {
                 winText.textContent = "It's a draw!";
             } else {
                 winText.textContent = `${turnInfo.gameStatus.getMarker()} wins!`;
             }
+
+            cells.forEach(cell => {
+                cell.removeEventListener('click', cellClick);
+                cell.classList.add('filled');
+            })
         }
     }
 
     const getRow = (cellId) => Math.floor(cellId/3);
 
     const getCol = (cellId) => cellId % 3;
+
+    function reset() {
+        game.reset();
+        cells.forEach(cell => cell.textContent = '');
+        cells.forEach(cell => {
+            cell.addEventListener('click', cellClick)
+            cell.classList.remove('filled');
+        })
+        winText.classList.remove('revealed');
+    }
 }
 
 const board = gameBoard();
