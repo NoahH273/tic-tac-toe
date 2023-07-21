@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 100px;
 }
 .title {
     font-size: 50px;
@@ -11,14 +10,21 @@
     margin-bottom: 0;
 }
 
+.winner-container {
+    margin: 50px 0;
+    height: 50px;
+}
 .winner {
-    visibility: hidden;
     text-align: center;
     font-size: 28px;
-    margin-top: 75px;
+    height: 50px;
+    margin: 0;
 }
-.winner.revealed {
-    visibility: visible;
+
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .board {
     display: grid;
@@ -48,4 +54,18 @@
 }
 .no-bottom {
     border-bottom: none;
+}
+
+.reset {
+    width: 100px;
+    height: 40px;
+    background-color: rgb(50, 200, 200);
+    border: 1px solid black;
+    cursor: grab;
+    transition: all 0.1s;
+    margin-top: 50px;
+}
+
+.reset.pressed {
+    transform: scale(1.1);
 }

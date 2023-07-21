@@ -11,7 +11,12 @@
 </head>
 <body>
     <div class="container">
-        <header class="header"><h1 class="title">Tic-Tac-Toe</h1></header>
+        <header class="header">
+            <h1 class="title">Tic-Tac-Toe</h1>
+            <div class="winner-container">
+                <p class="winner">X's turn</p>
+            </div>
+        </header>
         <main class="game-area">
             <div class="board">
                 <button class="cell no-top no-left" data-id="0"></button>
@@ -24,7 +29,6 @@
                 <button class="cell no-bottom" data-id="7"></button>
                 <button class="cell no-bottom no-right" data-id="8"></button>
             </div>
-            <p class="winner"></p>
             <button class="reset">Reset</button>
         </main>
     </div>

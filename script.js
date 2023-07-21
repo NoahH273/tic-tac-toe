@@ -134,6 +134,7 @@ function gameController(player1, player2, board) {
     let activePlayer;
     let activeMarker;
 
+    const getNextPlayer = () => activePlayer === player1 ? player2 : player1;
     const getActiveMarker = () => activeMarker;
 
     function setActivePlayer() {
@@ -173,13 +174,16 @@ function gameController(player1, player2, board) {
         board.resetBoard();
     }
 
-    return {takeTurn, getActiveMarker, reset};
+    return {takeTurn, getActiveMarker, getNextPlayer, reset};
 }
 
 function displayController(game) {
     const cells = Array.from(document.querySelectorAll(".cell"))
     const resetButton = document.querySelector('.reset');
     resetButton.addEventListener('click', reset);
+    resetButton.addEventListener('mousedown', (e) => e.target.classList.add('pressed'));
+    resetButton.addEventListener('mouseup', (e) => e.target.classList.remove('pressed'));
+
     const winText = document.querySelector('.winner');
     reset();
 
@@ -195,19 +199,27 @@ function displayController(game) {
         cell.textContent = game.getActiveMarker();
         cell.classList.add('filled');
             
-        if(turnInfo.gameStatus != 'continue') {
-            winText.classList.add('revealed');
+        if(turnInfo.gameStatus === 'continue') {
+            const nextPlayer = game.getNextPlayer();
+            const marker = nextPlayer.getMarker().toUpperCase()
+            winText.textContent = `${marker}'s turn`;
+        } else {
             if(turnInfo.gameStatus === 'draw') {
                 winText.textContent = "It's a draw!";
             } else {
-                winText.textContent = `${turnInfo.gameStatus.getMarker()} wins!`;
+                const winMarker = turnInfo.gameStatus.getMarker().toUpperCase();
+                winText.textContent = `${winMarker} wins!`;
             }
 
-            cells.forEach(cell => {
-                cell.removeEventListener('click', cellClick);
-                cell.classList.add('filled');
-            })
+            resetCells();
         }
+    }
+
+    const resetCells = () => {
+        cells.forEach(cell => {
+            cell.removeEventListener('click', cellClick);
+            cell.classList.add('filled');
+        })
     }
 
     const getRow = (cellId) => Math.floor(cellId/3);
@@ -221,7 +233,7 @@ function displayController(game) {
             cell.addEventListener('click', cellClick)
             cell.classList.remove('filled');
         })
-        winText.classList.remove('revealed');
+        winText.textContent = "X's turn"
     }
 }
 
