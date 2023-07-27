@@ -1,9 +1,13 @@
+* {
+    box-sizing: border-box;
+}
+
 .container {
     display: flex;
     flex-direction: column-reverse;
 }
 
-.game-container {
+.page-container {
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -13,19 +13,56 @@
 </head>
 <body>
     <div class="container">
-        <div class="settings-container">
+
+
+        <div class="settings-container page-container">
+            <h1 class="title">
+                Tic-Tac-Toe
+            </h1>
+            <div class="player-menu">
+                <form class="player" id="player1">
+                    <input type="text" placeholder="Player 1">
+                    <div class="player-type-container">
+                        <label for="player1-player" class="player-type">
+                            <input type="radio" name="marker" id="player1-player" class="player-type-selector" checked>
+                            <div class="player-type-visual">Player</div>
+                        </label>
+                        <label for="player1-ai" class="player-type">
+                            <input type="radio" name="marker" id="player1-ai" class="player-type-selector">
+                            <div class="player-type-visual">AI</div>
+                        </label>
+                    </div>
+                </form>
+                <form class="player" id="player2">
+                    <input type="text" placeholder="Player 2">
+                    <div class="player-type-container">
+                        <label for="player2-player" class="player-type">
+                            <input type="radio" name="marker" id="player2-player" class="player-type-selector">
+                            <div class="player-type-visual">Player</div>
+                        </label>
+                        <label for="player2-ai" class="player-type">
+                            <input type="radio" name="marker" id="player2-ai" class="player-type-selector" checked>
+                            <div class="player-type-visual">AI</div>
+                        </label>
+                    </div>
+                </form>
+            </div>
             <button class="start">
                 Start Game
             </button>
         </div>
-        <div class="game-container hidden">
+
+
+
+
+        <div class="game-container page-container hidden">
             <header class="header">
                 <h1 class="title">Tic-Tac-Toe</h1>
                 <div class="winner-container">
                     <p class="winner">X's turn</p>
                 </div>
             </header>
-            <main class="game-area">
+            <div class="game-area">
                 <div class="board">
                     <button class="cell no-top no-left" data-id="0"></button>
                     <button class="cell no-top" data-id="1"></button>
@@ -38,7 +75,7 @@
                     <button class="cell no-bottom no-right" data-id="8"></button>
                 </div>
                 <button class="reset">Reset</button>
-            </main>
+            </div>
         </div>
     </div>
 </body>

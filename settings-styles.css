@@ -1,7 +1,46 @@
 .settings-container.hidden {
     display: none;
 }
-.start {
-    width: 150px;
-    height: 100px;
+
+.player-menu {
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    margin: 50px;
 }
+
+#player1, #player2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+
+.player-type-container {
+    display: flex;
+    gap: 25px;
+}
+.player-type-selector {
+    display: none;
+}
+.player-type-visual {
+    border-radius: 20px;
+    width: 100px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.player-type-selector:checked+.player-type-visual {
+    border: 3px solid black;
+}
+
+.start {
+    width: 125px;
+    height: 60px;
+    background-color: rgb(50, 200, 200);
+    border: 1px solid black;
+    cursor: grab;
+}
+
