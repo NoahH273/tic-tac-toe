@@ -21,27 +21,27 @@
             </h1>
             <div class="player-menu">
                 <form class="player" id="player1">
-                    <input type="text" placeholder="Player 1">
+                    <input type="text" placeholder="Player 1" class="player-one-name">
                     <div class="player-type-container">
                         <label for="player1-player" class="player-type">
-                            <input type="radio" name="marker" id="player1-player" class="player-type-selector" checked>
+                            <input type="radio" name="player-one-type" value="player" id="player1-player" class="player-type-selector" checked>
                             <div class="player-type-visual">Player</div>
                         </label>
                         <label for="player1-ai" class="player-type">
-                            <input type="radio" name="marker" id="player1-ai" class="player-type-selector">
+                            <input type="radio" name="player-one-type" value="ai" id="player1-ai" class="player-type-selector">
                             <div class="player-type-visual">AI</div>
                         </label>
                     </div>
                 </form>
                 <form class="player" id="player2">
-                    <input type="text" placeholder="Player 2">
+                    <input type="text" placeholder="Player 2" class="player-two-name">
                     <div class="player-type-container">
                         <label for="player2-player" class="player-type">
-                            <input type="radio" name="marker" id="player2-player" class="player-type-selector">
+                            <input type="radio" name="player-two-type" value="player" id="player2-player" class="player-type-selector" checked>
                             <div class="player-type-visual">Player</div>
                         </label>
                         <label for="player2-ai" class="player-type">
-                            <input type="radio" name="marker" id="player2-ai" class="player-type-selector" checked>
+                            <input type="radio" name="player-two-type" value="ai" id="player2-ai" class="player-type-selector">
                             <div class="player-type-visual">AI</div>
                         </label>
                     </div>
@@ -51,9 +51,6 @@
                 Start Game
             </button>
         </div>
-
-
-
 
         <div class="game-container page-container hidden">
             <header class="header">
@@ -74,7 +71,10 @@
                     <button class="cell no-bottom" data-id="7"></button>
                     <button class="cell no-bottom no-right" data-id="8"></button>
                 </div>
-                <button class="reset">Reset</button>
+                <div class="game-buttons">
+                    <button class="back">Go Back</button>
+                    <button class="reset">Reset</button>
+                </div>
             </div>
         </div>
     </div>

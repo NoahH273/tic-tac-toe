@@ -13,7 +13,7 @@ function cell() {
     the gameboard contains a 3*3 board filled with initially unmarkerd cells which is not publicly exposed
     the gameboard has public methods to reset the board to empty, change a specified cell, and check if a given marker has gotten 3 in a row
 */
-function gameBoard() {
+const gameBoard = (function gameBoard() {
     let board;
     resetBoard();
 
@@ -122,19 +122,31 @@ function gameBoard() {
     }
 
     return {getBoard, resetBoard, checkCell, setCell, checkWin, printBoard};
-}
+})()
+
+
+
+
 
 function player(marker) {
     let getMarker = () => marker;
     return {getMarker};
 }
 
-function gameController(player1, player2, board) {
+const player1 = player('x');
+const player2 = player('o');
+
+
+
+
+
+const game = (function gameController(player1, player2, board, ai) {
     let turns = 0;
     let activePlayer;
     let activeMarker;
 
     const getNextPlayer = () => activePlayer === player1 ? player2 : player1;
+    const getActivePlayer = () => activePlayer || player1;
     const getActiveMarker = () => activeMarker;
 
     function setActivePlayer() {
@@ -167,22 +179,38 @@ function gameController(player1, player2, board) {
         return {validSquare};
     }
 
-    function reset() {
+    function reset(playerOne, playerTwo) {
+        if(arguments.length !== 0){
+            player1.name = playerOne.name;
+            player1.type = playerOne.type;
+            player2.name = playerTwo.name;
+            player2.type = playerTwo.type;
+        }
         turns = 0;
         activePlayer = undefined;
         activeMarker = undefined;
         board.resetBoard();
+        if(player1.type === 'ai') takeTurn(...ai.pickRandom());
     }
 
-    return {takeTurn, getActiveMarker, getNextPlayer, reset};
-}
+    return {takeTurn, getActivePlayer, getActiveMarker, getNextPlayer, reset};
+})(player1, player2, gameBoard, ai)
 
-function displayController(game) {
+
+
+
+
+const display = (function displayController(game) {
     const cells = Array.from(document.querySelectorAll(".cell"))
     const resetButton = document.querySelector('.reset');
     resetButton.addEventListener('click', reset);
     resetButton.addEventListener('mousedown', (e) => e.target.classList.add('pressed'));
     resetButton.addEventListener('mouseup', (e) => e.target.classList.remove('pressed'));
+    
+    const startButton = document.querySelector('.start');
+    const backButton = document.querySelector('.back');
+    startButton.addEventListener('click', changeScreen);
+    backButton.addEventListener('click', changeScreen);
 
     const winText = document.querySelector('.winner');
     reset();
@@ -201,14 +229,16 @@ function displayController(game) {
             
         if(turnInfo.gameStatus === 'continue') {
             const nextPlayer = game.getNextPlayer();
-            const marker = nextPlayer.getMarker().toUpperCase()
-            winText.textContent = `${marker}'s turn`;
+            const nextMarker = nextPlayer.getMarker().toUpperCase();
+            const nextName = nextPlayer.name;
+            
+            winText.textContent = `${nextName}'s turn (${nextMarker})`;
         } else {
             if(turnInfo.gameStatus === 'draw') {
                 winText.textContent = "It's a draw!";
             } else {
-                const winMarker = turnInfo.gameStatus.getMarker().toUpperCase();
-                winText.textContent = `${winMarker} wins!`;
+                const winName = turnInfo.gameStatus.name;
+                winText.textContent = `${winName} wins!`;
             }
 
             resetCells();
@@ -226,19 +256,43 @@ function displayController(game) {
 
     const getCol = (cellId) => cellId % 3;
 
-    function reset() {
-        game.reset();
+    function reset(player1, player2) {
+        if(arguments.length === 2) {
+            game.reset(player1, player2);
+        } else {
+            game.reset();
+            winText.textContent=``
+        }
         cells.forEach(cell => cell.textContent = '');
         cells.forEach(cell => {
             cell.addEventListener('click', cellClick)
             cell.classList.remove('filled');
         })
-        winText.textContent = "X's turn"
+        const firstPlayer = game.getActivePlayer();
+        winText.textContent = `${firstPlayer.name}'s turn (X)`
     }
-}
 
-const board = gameBoard();
-const player1 = player('x');
-const player2 = player('o');
-const game = gameController(player1, player2, board);
-displayController(game);
+    function changeScreen() {
+        const settingsScreen = document.querySelector('.settings-container')
+        const gameScreen = document.querySelector('.game-container');
+        if(gameScreen.style.display === '') {
+            const players = getPlayers();
+            reset(...players)
+        }
+        settingsScreen.classList.toggle('hidden');
+        gameScreen.classList.toggle('hidden');
+    }
+
+    function getPlayers() {
+        let playerOneName = document.querySelector('.player-one-name');
+        let playerTwoName = document.querySelector('.player-two-name');
+
+        playerOneName = playerOneName.value || playerOneName.placeholder;
+        playerTwoName = playerTwoName.value || playerTwoName.placeholder;
+
+        const playerOneType = document.querySelector('input[name="player-one-type"]:checked').value;
+        const playerTwoType = document.querySelector('input[name="player-two-type"]:checked').value;
+
+        return [{name: playerOneName, type: playerOneType}, {name: playerTwoName, type: playerTwoType}];
+    }
+})(game)
