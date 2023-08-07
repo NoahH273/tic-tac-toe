@@ -137,10 +137,14 @@ const player1 = player('x');
 const player2 = player('o');
 
 
+const ai = (function ai() {
+    const randomSquare = () => Math.floor((Math.random() * 9));
+    return {randomSquare};
+})()
 
 
 
-const game = (function gameController(player1, player2, board, ai) {
+const game = (function gameController(player1, player2, board) {
     let turns = 0;
     let activePlayer;
     let activeMarker;
@@ -155,28 +159,25 @@ const game = (function gameController(player1, player2, board, ai) {
     }
 
     function takeTurn(row, col) {
-        let validSquare = board.checkCell(row, col);  
-        if(validSquare) {
-            turns++;
-            setActivePlayer();
-            board.setCell(row, col, activeMarker);
-            const gameStatus = board.checkWin(activeMarker);
+        turns++;
+        setActivePlayer();
+        board.setCell(row, col, activeMarker);
+        const gameEnd = board.checkWin(activeMarker);
+        let gameStatus
 
-            let turnInfo = {validSquare};
+        if(gameEnd){
+            gameStatus = activePlayer;
+        } 
+        else if(turns === 9) {
+            gameStatus = 'draw';
+        } else {    
+            gameStatus = 'continue'
+        }   
+        return gameStatus;
+    }
 
-            if(gameStatus){
-                turnInfo.gameStatus = activePlayer;
-            } 
-            else if(turns === 9) {
-                turnInfo.gameStatus = 'draw';
-            } else {
-                
-                turnInfo.gameStatus = 'continue'
-            }
-            
-            return turnInfo;
-        }
-        return {validSquare};
+    function checkSquare(row, col) {
+        return board.checkCell(row, col);
     }
 
     function reset(playerOne, playerTwo) {
@@ -190,11 +191,10 @@ const game = (function gameController(player1, player2, board, ai) {
         activePlayer = undefined;
         activeMarker = undefined;
         board.resetBoard();
-        if(player1.type === 'ai') takeTurn(...ai.pickRandom());
     }
 
-    return {takeTurn, getActivePlayer, getActiveMarker, getNextPlayer, reset};
-})(player1, player2, gameBoard, ai)
+    return {takeTurn, checkSquare, getActivePlayer, getActiveMarker, getNextPlayer, reset};
+})(player1, player2, gameBoard)
 
 
 
@@ -216,28 +216,34 @@ const display = (function displayController(game) {
     reset();
 
     function cellClick(e) {
-        const cell = e.target;
+        takeTurn(e.target);
+    }
+
+    function takeTurn(cell) {
         const cellId = cell.dataset.id
         const row = getRow(cellId);
         const col = getCol(cellId);
-        const turnInfo = game.takeTurn(row, col);
+        if(game.checkSquare(row, col) !== true) return;
 
-        if(!turnInfo.validSquare) return;
+        const gameStatus = game.takeTurn(row, col);
 
         cell.textContent = game.getActiveMarker();
         cell.classList.add('filled');
             
-        if(turnInfo.gameStatus === 'continue') {
+        if(gameStatus === 'continue') {
             const nextPlayer = game.getNextPlayer();
             const nextMarker = nextPlayer.getMarker().toUpperCase();
             const nextName = nextPlayer.name;
             
             winText.textContent = `${nextName}'s turn (${nextMarker})`;
+            if(nextPlayer.type === 'ai') {
+                aiTurn();
+            }
         } else {
-            if(turnInfo.gameStatus === 'draw') {
+            if(gameStatus === 'draw') {
                 winText.textContent = "It's a draw!";
             } else {
-                const winName = turnInfo.gameStatus.name;
+                const winName = gameStatus.name;
                 winText.textContent = `${winName} wins!`;
             }
 
@@ -257,6 +263,7 @@ const display = (function displayController(game) {
     const getCol = (cellId) => cellId % 3;
 
     function reset(player1, player2) {
+        tempOverlay()
         if(arguments.length === 2) {
             game.reset(player1, player2);
         } else {
@@ -270,6 +277,9 @@ const display = (function displayController(game) {
         })
         const firstPlayer = game.getActivePlayer();
         winText.textContent = `${firstPlayer.name}'s turn (X)`
+        if(firstPlayer.type === 'ai') {
+            aiTurn();
+        }
     }
 
     function changeScreen() {
@@ -295,4 +305,39 @@ const display = (function displayController(game) {
 
         return [{name: playerOneName, type: playerOneType}, {name: playerTwoName, type: playerTwoType}];
     }
+
+    function getCell(id) {
+        return document.querySelector(`.cell[data-id="${id}"`);
+    }
+
+    function getRandomValidCell() {
+        let valid = false;
+        let cell;
+        let cellId;
+        while(valid === false) {
+            cellId = ai.randomSquare();
+            if(game.checkSquare(getRow(cellId), getCol(cellId))) {
+                cell = getCell(cellId);
+                valid = true;
+            }
+        }
+        return cell;
+    }
+
+    function aiTurn() {
+        tempOverlay();
+        setTimeout(takeTurn, 1000, getRandomValidCell());
+    }
+
+    function tempOverlay() {
+        const overlay = document.querySelector('.overlay');
+        overlay.style.display = 'block';
+        setTimeout(hideOverlay, 1000);
+    }
+
+    function hideOverlay() {
+        const overlay = document.querySelector('.overlay');
+        overlay.style.display = 'none';
+    }
+
 })(game)
